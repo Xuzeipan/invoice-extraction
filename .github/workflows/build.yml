@@ -3,16 +3,16 @@ name: Build Cross Platform
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     
@@ -29,27 +29,21 @@ jobs:
         --hidden-import=openpyxl \
         --argv-emulation \
         main.py
-        
-        # 创建dmg（可选）
-        mkdir -p dist/dmg
-        cp -r "dist/发票提取工具.app" dist/dmg/
-        hdiutil create dist/发票提取工具_mac.dmg -srcfolder dist/dmg -ov
     
     - name: Upload macOS Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: macos-build
-        path: |
-          dist/发票提取工具
-          dist/发票提取工具_mac.dmg
+        path: dist/发票提取工具
+        retention-days: 30
 
   build-windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     
@@ -63,7 +57,8 @@ jobs:
         pyinstaller --onefile --windowed --name="发票提取工具" --hidden-import=PyPDF2 --hidden-import=openpyxl main.py
     
     - name: Upload Windows Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: windows-build
         path: dist/发票提取工具.exe
+        retention-days: 30
